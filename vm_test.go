@@ -38,7 +38,16 @@ func TestRun(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	expected := []Value{10, 10, 10}
+	expected := []Value{0, 0, 0}
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected %v, got %v.", expected, result)
+	}
+
+	result, err = Run(Program{0, 1, 1, 0, 1, 2})
+	if err != nil {
+		t.Error(err)
+	}
+	expected = []Value{3}
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Expected %v, got %v.", expected, result)
 	}

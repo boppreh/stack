@@ -1,8 +1,5 @@
 package stack
 
-type OpCode int
-type Program []OpCode
-
 func RunOps(inputs []Value, ops []Op) ([]Value, error) {
 	s := New(inputs)
 
@@ -15,13 +12,23 @@ func RunOps(inputs []Value, ops []Op) ([]Value, error) {
 	return s.Exhaust(), nil
 }
 
+type OpCode int
+type Program []OpCode
+
 func Run(program Program) ([]Value, error) {
 	s := new(Stack)
+
+	r := s.Push
+	p := s.Pop
 
 	for _, opCode := range program {
 		switch opCode {
 			case 0:
-				s.Push(10)
+				r(0)
+			case 1:
+				r(p() + 1)
+			case 2:
+				r(p() + p())
 		}
 	}
 
