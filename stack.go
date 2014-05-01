@@ -18,6 +18,16 @@ type Param func() Value
 
 type Op func(Param) (Value, error)
 
+func New(values []Value) *Stack {
+	s := new(Stack)
+
+	for i := len(values) - 1; i >= 0; i-- {
+		s.Push(values[i])
+	}
+
+	return s
+}
+
 func (s *Stack) Push(vs ...Value) {
 	for _, value := range vs {
 		s.top = &node{value, s.top}

@@ -41,6 +41,8 @@ func TestStackStruct(t *testing.T) {
 	s.Push(15)
 	s.Push(1)
 	assertStack(t, s, 1, 15, 20)
+
+	assertStack(t, New([]Value{1, 15, 20}), 1, 15, 20)
 }
 
 func TestStackApply(t *testing.T) {
