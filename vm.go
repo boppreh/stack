@@ -70,6 +70,8 @@ func parseValue(input chan rune, output chan Value) {
 		switch char {
 		case '"':
 			output <- parseString(input, '"')
+		case '\'':
+			output <- parseString(input, '\'')
 		case ':':
 			output <- parseString(input, ' ')
 		case ' ':
