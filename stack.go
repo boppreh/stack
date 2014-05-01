@@ -46,11 +46,34 @@ func (s *Stack) Apply(op Op) (err error) {
 		}
 	}()
 
-	result, op_err := op(s.Pop)
-	if op_err != nil {
-		return op_err
-	}
-	s.Push(result)
+	var result Value
+	result, err = op(s.Pop)
 
+	if err == nil {
+		s.Push(result)
+	}
 	return
+}
+
+func (s *Stack) Exhaust() (result []Value) {
+	for !s.Empty() {
+		result = append(result, s.Pop())
+	}
+	return
+}
+
+func Run(inputs []Value, ops []Op) ([]Value, error) {
+	s := new(Stack)
+
+	for _, value := range inputs {
+		s.Push(value)
+	}
+
+	for _, op := range ops {
+		if err := s.Apply(op); err != nil {
+			return nil, err
+		}
+	}
+
+	return s.Exhaust(), nil
 }

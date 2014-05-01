@@ -27,6 +27,22 @@ func assertError(t *testing.T, s *Stack, op Op) {
 	}
 }
 
+func assertResult(t *testing.T, inputs []Value, ops []Op, expected []Value) {
+	results, err := Run(inputs, ops)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(results) != len(expected) {
+		t.Errorf("Expected %v results, got %v.", len(expected), len(results))
+	}
+
+	for i := range results {
+		assert(t, results[i], expected[i])
+	}
+}
+
 func increment(p Param) (Value, error) { return p() + 1, nil }
 func sum(p Param) (Value, error) { return p() + p(), nil }
 func deepthought(p Param) (Value, error) { return 42, nil }
@@ -59,4 +75,16 @@ func TestStackApply(t *testing.T) {
 	assertStack(t, s, 42)
 
 	assertError(t, s, increment)
+}
+
+func TestRun(t *testing.T) {
+	_, err := Run([]Value{}, []Op{increment})
+	if err == nil {
+		t.Errorf("Insufficient values should raise an error.")
+	}
+
+	assertResult(t, []Value{}, []Op{}, []Value{})
+	assertResult(t, []Value{2, 2}, []Op{sum}, []Value{4})
+	assertResult(t, []Value{2, 2, 2}, []Op{sum, sum}, []Value{6})
+	assertResult(t, []Value{}, []Op{deepthought, increment}, []Value{43})
 }
