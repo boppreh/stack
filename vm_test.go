@@ -52,3 +52,12 @@ func TestRun(t *testing.T) {
 		t.Errorf("Expected %v, got %v.", expected, result)
 	}
 }
+
+func TestParse(t *testing.T) {
+	result := Parse("\"first string\"")
+	expected := []Value{"first string"}
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected %v, got %v.", expected, result)
+	}
+	
+}
