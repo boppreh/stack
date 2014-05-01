@@ -46,8 +46,8 @@ func parseString(input chan rune, delimiter rune) string {
 	text := make([]rune, 0)
 
 	for {
-		char := <-input
-		if char == delimiter {
+		char, ok := <-input
+		if char == delimiter || !ok {
 			break
 		} else if char == '\\' {
 			char = <-input
@@ -70,6 +70,8 @@ func parseValue(input chan rune, output chan Value) {
 		switch char {
 		case '"':
 			output <- parseString(input, '"')
+		case ':':
+			output <- parseString(input, ' ')
 		case ' ':
 			continue
 		}

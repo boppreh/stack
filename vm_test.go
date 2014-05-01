@@ -54,8 +54,16 @@ func TestRun(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	result := Parse("\"first string\"")
-	expected := []Value{"first string"}
+	var result, expected []Value
+
+	result = Parse("\"first string\"")
+	expected = []Value{"first string"}
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected %v, got %v.", expected, result)
+	}
+
+	result = Parse(":symbol")
+	expected = []Value{"symbol"}
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Expected %v, got %v.", expected, result)
 	}
