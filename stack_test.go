@@ -10,21 +10,37 @@ func assert(t *testing.T, result Value, expected Value) {
 
 func assertStack(t *testing.T, stack *Stack, expectedValues ...Value) {
 	for key, value := range expectedValues {
-		popped := stack.pop()
+		popped := stack.Pop()
 		if popped != value {
 			t.Errorf("Expected value %v to be %v, got %v instead.", key, value, popped)
 		}
+	}
+
+	if !stack.Empty() {
+		t.Errorf("Stack has more elements than expected.")
 	}
 }
 
 func TestStackStruct(t *testing.T) {
 	s := new(Stack)
 
-	s.push(10)
-	assert(t, s.pop(), 10)
+	s.Push(10)
+	assert(t, s.Pop(), 10)
 
-	s.push(20)
-	s.push(15)
-	s.push(1)
+	s.Push(20)
+	s.Push(15)
+	s.Push(1)
 	assertStack(t, s, 1, 15, 20)
+}
+
+func TestStackApply(t *testing.T) {
+	s := new(Stack)
+	s.Push(1)
+	s.Push(1)
+
+	s.apply(func (s *Stack) Value {
+		return s.Pop() + s.Pop()
+	})
+
+	assertStack(t, s, 2)
 }
