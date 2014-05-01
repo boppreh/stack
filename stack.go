@@ -1,5 +1,7 @@
 package stack
 
+import "errors"
+
 type Value int
 
 type node struct {
@@ -37,8 +39,16 @@ func (s *Stack) Empty() bool {
 	return s.top == nil
 }
 
-func (s *Stack) Apply(ops... Op) {
+func (s *Stack) Apply(ops... Op) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = errors.New("Not enough values in the stack to apply operator.")
+		}
+	}()
+
 	for _, op := range ops {
 		s.Push(op(s.Pop))
 	}
+
+	return
 }

@@ -21,13 +21,10 @@ func assertStack(t *testing.T, s *Stack, expectedValues ...Value) {
 	}
 }
 
-func assertPanic(t *testing.T, s *Stack, op Op) {
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("Expected error, but function completed normally.")
-		}
-	}()
-	s.Apply(op)
+func assertError(t *testing.T, s *Stack, op Op) {
+	if s.Apply(op) == nil {
+		t.Errorf("Expected error, but op completely normally.")
+	}
 }
 
 
@@ -59,7 +56,7 @@ func TestStackApply(t *testing.T) {
 	s.Apply(func (p Param) Value { return 22 })
 	assertStack(t, s, 22)
 
-	assertPanic(t, s, increment)
+	assertError(t, s, increment)
 
 	s.Push(1)
 	s.Apply(increment, increment, increment)
