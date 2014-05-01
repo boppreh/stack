@@ -1,6 +1,9 @@
 package stack
 
-import "testing"
+import (
+	"testing"
+	"reflect"
+)
 
 func assertResult(t *testing.T, inputs []Value, ops []Op, expected []Value) {
 	results, err := RunOps(inputs, ops)
@@ -18,7 +21,7 @@ func assertResult(t *testing.T, inputs []Value, ops []Op, expected []Value) {
 	}
 }
 
-func TestRun(t *testing.T) {
+func TestRunOps(t *testing.T) {
 	_, err := RunOps([]Value{}, []Op{increment})
 	if err == nil {
 		t.Errorf("Insufficient values should raise an error.")
@@ -28,4 +31,15 @@ func TestRun(t *testing.T) {
 	assertResult(t, []Value{2, 2}, []Op{sum}, []Value{4})
 	assertResult(t, []Value{2, 2, 2}, []Op{sum, sum}, []Value{6})
 	assertResult(t, []Value{}, []Op{deepthought, increment}, []Value{43})
+}
+
+func TestRun(t *testing.T) {
+	result, err := Run(Program{0, 0, 0})
+	if err != nil {
+		t.Error(err)
+	}
+	expected := []Value{10, 10, 10}
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected %v, got %v.", expected, result)
+	}
 }
