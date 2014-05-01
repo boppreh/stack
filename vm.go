@@ -26,9 +26,9 @@ func Run(program Program) ([]Value, error) {
 			case 0:
 				r(0)
 			case 1:
-				r(p() + 1)
+				r(p().(int) + 1)
 			case 2:
-				r(p() + p())
+				r(p().(int) + p().(int))
 		}
 	}
 

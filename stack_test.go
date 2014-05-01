@@ -27,8 +27,8 @@ func assertError(t *testing.T, s *Stack, op Op) {
 	}
 }
 
-func increment(p Param) (Value, error) { return p() + 1, nil }
-func sum(p Param) (Value, error) { return p() + p(), nil }
+func increment(p Param) (Value, error) { return p().(int) + 1, nil }
+func sum(p Param) (Value, error) { return p().(int) + p().(int), nil }
 func deepthought(p Param) (Value, error) { return 42, nil }
 
 func TestStackStruct(t *testing.T) {

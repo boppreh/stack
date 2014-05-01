@@ -2,7 +2,7 @@ package stack
 
 import "errors"
 
-type Value int
+type Value interface{}
 
 type node struct {
 	value Value	
