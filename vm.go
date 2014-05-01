@@ -1,46 +1,9 @@
 package stack
 
 import (
-	"fmt"
+	"strconv"
+	"unicode"
 )
-
-func RunOps(inputs []Value, ops []Op) ([]Value, error) {
-	s := New(inputs)
-
-	for _, op := range ops {
-		if err := s.Apply(op); err != nil {
-			return nil, err
-		}
-	}
-
-	return s.Exhaust(), nil
-}
-
-type OpCode int
-type Program []OpCode
-
-func Run(program Program) ([]Value, error) {
-	s := new(Stack)
-
-	r := s.Push
-	p := s.Pop
-
-	for _, opCode := range program {
-		switch opCode {
-		case 0:
-			r(0)
-		case 1:
-			r(p().(int) + 1)
-		case 2:
-			r(p().(int) + p().(int))
-
-		case 10:
-			fmt.Print(p())
-		}
-	}
-
-	return s.Exhaust(), nil
-}
 
 func parseString(input chan rune, delimiter rune) string {
 	text := make([]rune, 0)
@@ -57,6 +20,21 @@ func parseString(input chan rune, delimiter rune) string {
 	}
 
 	return string(text)
+}
+
+func parseNumber(input chan rune, firstDigit rune) int {
+	number := make([]rune, 0)
+	number = append(number, firstDigit)
+	for {
+		digit, ok := <-input
+		if !ok || !unicode.IsNumber(digit) {
+			break
+		}
+		number = append(number, digit)
+	}
+
+	result, _ := strconv.Atoi(string(number))
+	return result
 }
 
 func lexer(sourceCode string, c chan rune) {
@@ -80,6 +58,10 @@ func Parse(sourceCode string) (program []Value) {
 			return
 		}
 
+		if unicode.IsNumber(char) {
+			token = parseNumber(input, char)
+		}
+
 		switch char {
 		case '"':
 			token = parseString(input, '"')
@@ -87,6 +69,7 @@ func Parse(sourceCode string) (program []Value) {
 			token = parseString(input, '\'')
 		case ':':
 			token = parseString(input, ' ')
+
 		case ' ':
 			continue
 		}
