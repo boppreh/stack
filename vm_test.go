@@ -3,7 +3,7 @@ package stack
 import "testing"
 
 func assertResult(t *testing.T, inputs []Value, ops []Op, expected []Value) {
-	results, err := Run(inputs, ops)
+	results, err := RunOps(inputs, ops)
 
 	if err != nil {
 		t.Error(err)
@@ -19,7 +19,7 @@ func assertResult(t *testing.T, inputs []Value, ops []Op, expected []Value) {
 }
 
 func TestRun(t *testing.T) {
-	_, err := Run([]Value{}, []Op{increment})
+	_, err := RunOps([]Value{}, []Op{increment})
 	if err == nil {
 		t.Errorf("Insufficient values should raise an error.")
 	}
