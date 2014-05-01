@@ -1,5 +1,7 @@
 package stack
 
+import "fmt"
+
 func RunOps(inputs []Value, ops []Op) ([]Value, error) {
 	s := New(inputs)
 
@@ -29,6 +31,9 @@ func Run(program Program) ([]Value, error) {
 				r(p().(int) + 1)
 			case 2:
 				r(p().(int) + p().(int))
+
+			case 10:
+				fmt.Print(p())
 		}
 	}
 
