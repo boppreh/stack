@@ -30,6 +30,7 @@ func assertPanic(t *testing.T, s *Stack, op Op) {
 	s.Apply(op)
 }
 
+
 func TestStackStruct(t *testing.T) {
 	s := new(Stack)
 
@@ -44,9 +45,10 @@ func TestStackStruct(t *testing.T) {
 
 func TestStackApply(t *testing.T) {
 	s := new(Stack)
+	increment := func (p Param) Value { return p() + 1 }
 
 	s.Push(1)
-	s.Apply(func (p Param) Value { return p() + 1 })
+	s.Apply(increment)
 	assertStack(t, s, 2)
 
 	s.Push(3)
@@ -57,5 +59,9 @@ func TestStackApply(t *testing.T) {
 	s.Apply(func (p Param) Value { return 22 })
 	assertStack(t, s, 22)
 
-	assertPanic(t, s, func (p Param) Value { return p() })
+	assertPanic(t, s, increment)
+
+	s.Push(1)
+	s.Apply(increment, increment, increment)
+	assertStack(t, s, 4)
 }

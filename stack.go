@@ -37,6 +37,8 @@ func (s *Stack) Empty() bool {
 	return s.top == nil
 }
 
-func (s *Stack) Apply(op Op) {
-	s.Push(op(s.Pop))
+func (s *Stack) Apply(ops... Op) {
+	for _, op := range ops {
+		s.Push(op(s.Pop))
+	}
 }
