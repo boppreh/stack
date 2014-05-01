@@ -1,8 +1,8 @@
 package stack
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
 func assertResult(t *testing.T, inputs []Value, ops []Op, expected []Value) {

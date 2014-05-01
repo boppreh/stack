@@ -5,12 +5,12 @@ import "errors"
 type Value interface{}
 
 type node struct {
-	value Value	
-	next *node
+	value Value
+	next  *node
 }
 
 type Stack struct {
-	top *node
+	top  *node
 	size int
 }
 
