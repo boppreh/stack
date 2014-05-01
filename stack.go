@@ -16,7 +16,7 @@ type Stack struct {
 
 type Param func() Value
 
-type Op func(Param) Value
+type Op func(Param) (Value, error)
 
 func (s *Stack) Push(vs ...Value) {
 	for _, value := range vs {
@@ -39,16 +39,18 @@ func (s *Stack) Empty() bool {
 	return s.top == nil
 }
 
-func (s *Stack) Apply(ops... Op) (err error) {
+func (s *Stack) Apply(op Op) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = errors.New("Not enough values in the stack to apply operator.")
 		}
 	}()
 
-	for _, op := range ops {
-		s.Push(op(s.Pop))
+	result, op_err := op(s.Pop)
+	if op_err != nil {
+		return op_err
 	}
+	s.Push(result)
 
 	return
 }

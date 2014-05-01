@@ -27,6 +27,9 @@ func assertError(t *testing.T, s *Stack, op Op) {
 	}
 }
 
+func increment(p Param) (Value, error) { return p() + 1, nil }
+func sum(p Param) (Value, error) { return p() + p(), nil }
+func deepthought(p Param) (Value, error) { return 42, nil }
 
 func TestStackStruct(t *testing.T) {
 	s := new(Stack)
@@ -42,7 +45,6 @@ func TestStackStruct(t *testing.T) {
 
 func TestStackApply(t *testing.T) {
 	s := new(Stack)
-	increment := func (p Param) Value { return p() + 1 }
 
 	s.Push(1)
 	s.Apply(increment)
@@ -50,15 +52,11 @@ func TestStackApply(t *testing.T) {
 
 	s.Push(3)
 	s.Push(5)
-	s.Apply(func (p Param) Value { return p() + p() })
+	s.Apply(sum)
 	assertStack(t, s, 8)
 
-	s.Apply(func (p Param) Value { return 22 })
-	assertStack(t, s, 22)
+	s.Apply(deepthought)
+	assertStack(t, s, 42)
 
 	assertError(t, s, increment)
-
-	s.Push(1)
-	s.Apply(increment, increment, increment)
-	assertStack(t, s, 4)
 }
