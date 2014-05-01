@@ -59,44 +59,39 @@ func parseString(input chan rune, delimiter rune) string {
 	return string(text)
 }
 
-func parseValue(input chan rune, output chan Value) {
+func lexer(sourceCode string, c chan rune) {
+	for _, char := range sourceCode {
+		c <- char
+	}
+	close(c)
+}
+
+func Parse(sourceCode string) (program []Value) {
+	input := make(chan rune)
+	go lexer(sourceCode, input)
+
+	program = make([]Value, 0)	
+
+	var token Value
+
 	for {
 		char, ok := <- input
 		if !ok {
-			close(output)
 			return
 		}
 
 		switch char {
 		case '"':
-			output <- parseString(input, '"')
+			token = parseString(input, '"')
 		case '\'':
-			output <- parseString(input, '\'')
+			token = parseString(input, '\'')
 		case ':':
-			output <- parseString(input, ' ')
+			token = parseString(input, ' ')
 		case ' ':
 			continue
 		}
+		program = append(program, token)
 	}
-}
 
-func Parse(sourceCode string) (program []Value) {
-	input := make(chan rune)
-	output := make(chan Value)
-
-	go parseValue(input, output)
-
-	for _, char := range sourceCode {
-		input <- char
-	}
-	close(input)
-
-	program = make([]Value, 0)	
-	for {
-		v, ok := <- output
-		if !ok {
-			return
-		}
-		program = append(program, v)
-	}
+	return
 }
