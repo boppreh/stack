@@ -38,28 +38,8 @@ func TestStackApply(t *testing.T) {
 	s.Push(1)
 	s.Push(1)
 
-	s.Apply(func (s *Stack) Value {
-		return s.Pop() + s.Pop()
-	})
-
-	assertStack(t, s, 2)
-}
-
-func TestStackApplyN(t *testing.T) {
-	s := new(Stack)
-	s.Push(1)
-
-	s.Apply1(func (p Param) Value {
-		return p() + 1
-	})
-
-	assertStack(t, s, 2)
-
-	s.Push(1)
-	s.Push(1)
-
-	s.Apply2(func (a Param, b Param) Value {
-		return a() + b()
+	s.Apply(func (p Param) Value {
+		return p() + p()
 	})
 
 	assertStack(t, s, 2)
