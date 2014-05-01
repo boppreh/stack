@@ -53,19 +53,13 @@ func TestRun(t *testing.T) {
 	}
 }
 
+func assertParse(t *testing.T, sourceCode string, expected []Value) {
+	result := Parse(sourceCode)
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected %v, got %v.", expected, result)
+	}
+}
 func TestParse(t *testing.T) {
-	var result, expected []Value
-
-	result = Parse("\"first string\"")
-	expected = []Value{"first string"}
-	if !reflect.DeepEqual(result, expected) {
-		t.Errorf("Expected %v, got %v.", expected, result)
-	}
-
-	result = Parse(":symbol")
-	expected = []Value{"symbol"}
-	if !reflect.DeepEqual(result, expected) {
-		t.Errorf("Expected %v, got %v.", expected, result)
-	}
-	
+	assertParse(t, "\"first string\"", []Value{"first string"})
+	assertParse(t, ":symbol", []Value{"symbol"})
 }
