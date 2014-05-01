@@ -8,17 +8,26 @@ func assert(t *testing.T, result Value, expected Value) {
 	}
 }
 
-func assertStack(t *testing.T, stack *Stack, expectedValues ...Value) {
+func assertStack(t *testing.T, s *Stack, expectedValues ...Value) {
 	for key, value := range expectedValues {
-		popped := stack.Pop()
+		popped := s.Pop()
 		if popped != value {
 			t.Errorf("Expected value %v to be %v, got %v instead.", key, value, popped)
 		}
 	}
 
-	if !stack.Empty() {
+	if !s.Empty() {
 		t.Errorf("Stack has more elements than expected.")
 	}
+}
+
+func assertPanic(t *testing.T, s *Stack, op Op) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("Expected error, but function completed normally.")
+		}
+	}()
+	s.Apply(op)
 }
 
 func TestStackStruct(t *testing.T) {
@@ -35,12 +44,18 @@ func TestStackStruct(t *testing.T) {
 
 func TestStackApply(t *testing.T) {
 	s := new(Stack)
-	s.Push(1)
-	s.Push(1)
 
-	s.Apply(func (p Param) Value {
-		return p() + p()
-	})
-
+	s.Push(1)
+	s.Apply(func (p Param) Value { return p() + 1 })
 	assertStack(t, s, 2)
+
+	s.Push(3)
+	s.Push(5)
+	s.Apply(func (p Param) Value { return p() + p() })
+	assertStack(t, s, 8)
+
+	s.Apply(func (p Param) Value { return 22 })
+	assertStack(t, s, 22)
+
+	assertPanic(t, s, func (p Param) Value { return p() })
 }
