@@ -109,6 +109,13 @@ func parseChan(input chan rune) (program []Value, err error) {
 			case '*':
 				token = sMul
 
+			case '=':
+				token = sEq
+			case '>':
+				token = sGt
+			case '<':
+				token = sLt
+
 			case '%':
 				token = sMap
 			case '?':

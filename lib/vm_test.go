@@ -55,6 +55,10 @@ func TestRun(t *testing.T) {
 	assertRun(t, "1 1 +", []Value{2})
 	assertRun(t, "1 1 + 2 *", []Value{4})
 
+	assertRun(t, "1 1 =", []Value{true})
+	assertRun(t, "1 2 <", []Value{true})
+	assertRun(t, "1 2 >", []Value{false})
+
 	assertRun(t, "[1 2 3] [1 +] %", []Value{[]Value{2, 3, 4}})
 	assertRun(t, "[1 2 3] [1 +] % [2 *] %", []Value{[]Value{4, 6, 8}})
 	assertRun(t, "[1 2 3] [1 + 2 *] %", []Value{[]Value{4, 6, 8}})

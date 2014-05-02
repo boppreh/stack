@@ -7,6 +7,16 @@ func sSub(i In, o Out) { o(i().(int) - i().(int)) }
 func sDiv(i In, o Out) { o(i().(int) / i().(int)) }
 func sMul(i In, o Out) { o(i().(int) * i().(int)) }
 
+func sEq(i In, o Out) {
+	o(i() == i())
+}
+func sLt(i In, o Out) {
+	o(i().(int) > i().(int))
+}
+func sGt(i In, o Out) {
+	o(i().(int) < i().(int))
+}
+
 func sMap(i In, o Out) {
 	fnList := i().([]Value)
 	list := i().([]Value)
@@ -42,6 +52,8 @@ func sIf(i In, o Out) {
 		condition = value != 0
 	case string:
 		condition = value != ""
+	case bool:
+		condition = value.(bool)
 	default:
 		fmt.Println("Ops:", value)
 	}
