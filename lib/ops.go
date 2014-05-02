@@ -23,7 +23,7 @@ func sMap(i In, o Out) {
 	o(list)
 }
 
-func sRun(i In, o Out) {
+func sEval(i In, o Out) {
 	code := i().([]Value)
 	result, _ := Run(code)
 	for _, value := range result {
@@ -47,12 +47,10 @@ func sIf(i In, o Out) {
 	}
 
 	if condition {
-		o(then)
+		pushAndRun(i, o, then)
 	} else {
-		o(else_)
+		pushAndRun(i, o, else_)
 	}
-
-	sRun(i, o)
 }
 
 func sPrint(i In, o Out) {
@@ -66,8 +64,8 @@ func sPrint(i In, o Out) {
 var declared = map[string][]Value{}
 func sCall(i In, o Out) {
 	name := i().(string)
-	o(declared[name])
-	sRun(i, o)
+	body := declared[name]
+	pushAndRun(i, o, body)
 }
 func sDecl(i In, o Out) {
 	name := i().(string)
@@ -76,6 +74,6 @@ func sDecl(i In, o Out) {
 }
 
 var ops = map[string]func (In, Out){
-	"eval": sRun,
+	"eval": sEval,
 	"print": sPrint,
 }

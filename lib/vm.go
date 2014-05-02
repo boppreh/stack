@@ -114,7 +114,7 @@ func parseChan(input chan rune) (program []Value, err error) {
 			case '?':
 				token = sIf
 			case '!':
-				token = sRun
+				token = sEval
 
 			case '$':
 				token = sDecl
@@ -151,18 +151,20 @@ func Parse(sourceCode string) (program []Value, err error) {
 	return
 }
 
-func Run(program []Value) ([]Value, error) {
-	s := new(Stack)
-
-	for _, value := range program {
+func pushAndRun(i In, o Out, valuesToAdd []Value) {
+	for _, value := range valuesToAdd {
 		switch value.(type) {
 		case func(In, Out):
-			value.(func(In, Out))(s.Pop, s.Push)
+			value.(func(In, Out))(i, o)
 
 		default:
-			s.Push(value)
+			o(value)
 		}
 	}
+}
 
+func Run(program []Value) ([]Value, error) {
+	s := new(Stack)
+	pushAndRun(s.Pop, s.Push, program)
 	return s.Exhaust(), nil
 }
