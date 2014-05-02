@@ -42,6 +42,7 @@ func (s *Stack) Empty() bool {
 }
 
 func (s *Stack) Exhaust() (result []Value) {
+	result = make([]Value, 0)
 	for !s.Empty() {
 		result = append(result, s.Pop())
 	}
