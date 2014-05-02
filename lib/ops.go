@@ -1,6 +1,9 @@
 package lib
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 func sAdd(i In, o Out) { o(i().(int) + i().(int)) }
 func sSub(i In, o Out) { o(i().(int) - i().(int)) }
@@ -74,7 +77,16 @@ func sIf(i In, o Out) {
 func sPrint(i In, o Out) {
 	v := i()
 	fmt.Println(v)
-	o(v)
+}
+
+func sNumber(i In, o Out) {
+	result, _ := strconv.Atoi(i().(string))
+	o(result)
+}
+
+func sStr(i In, o Out) {
+	result := strconv.Itoa(i().(int))
+	o(result)
 }
 
 // Using a global variable here is actually useful because it allows the
@@ -108,4 +120,7 @@ var ops = map[string]func (In, Out){
 	"if": sIf,
 	"eval": sEval,
 	"dup": sDup,
+
+	"int": sNumber,
+	"str": sStr,
 }

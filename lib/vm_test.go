@@ -89,4 +89,7 @@ func TestRun(t *testing.T) {
 
 	assertRun(t, "[1 1 +] eval", []Value{2})
 	assertRun(t, "5 dup", []Value{5, 5})
+
+	assertRun(t, ":5 int", []Value{5})
+	assertRun(t, "5 str", []Value{"5"})
 }
