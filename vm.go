@@ -7,15 +7,16 @@ import (
 	"unicode"
 )
 
-type Param func() Value
+type In func() Value
+type Out func(Value)
 
-type Op func(Param) (Value, error)
+type Op func(In) (Value, error)
 
-func add(p Param) (Value, error) { return p().(int) + p().(int), nil }
-func sub(p Param) (Value, error) { return p().(int) - p().(int), nil }
-func div(p Param) (Value, error) { return p().(int) / p().(int), nil }
-func mul(p Param) (Value, error) { return p().(int) * p().(int), nil }
-func print(p Param) (Value, error) {
+func add(p In) (Value, error) { return p().(int) + p().(int), nil }
+func sub(p In) (Value, error) { return p().(int) - p().(int), nil }
+func div(p In) (Value, error) { return p().(int) / p().(int), nil }
+func mul(p In) (Value, error) { return p().(int) * p().(int), nil }
+func print(p In) (Value, error) {
 	v := p()
 	fmt.Println(v);
 	return v, nil
@@ -111,7 +112,7 @@ func parseChan(input chan rune) (program []Value, err error) {
 			case '[':
 				token = parseList(input, ']')
 
-			case '+': token = sum
+			case '+': token = add
 			case '-': token = sub
 			case '/': token = div
 			case '*': token = mul
@@ -147,8 +148,8 @@ func Run(program []Value) ([]Value, error) {
 
 	for _, value := range program {
 		switch value.(type) {
-		case func(Param) (Value, error):
-			result, err := value.(func(Param) (Value, error))(s.Pop)
+		case func(In) (Value, error):
+			result, err := value.(func(In) (Value, error))(s.Pop)
 			if err != nil {
 				return nil, err
 			}
