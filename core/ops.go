@@ -134,4 +134,6 @@ var ops = map[string]func (In, Out){
 	"read": sRead,
 	"write": sWrite,
 	"delete": sDelete,
+
+	"get": sGet,
 }

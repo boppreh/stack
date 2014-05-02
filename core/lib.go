@@ -5,6 +5,8 @@ import (
 	"os"
 	"bufio"
 	"io/ioutil"
+	"net/http"
+	"strings"
 )
 
 func strToValue(strings []string) []Value {
@@ -97,4 +99,22 @@ func sDelete(i In, o Out) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func sGet(i In, o Out) {
+	url := i().(string)
+	if !strings.Contains(url, "://") {
+		url = "http://" + url
+	}
+
+	res, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	content, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
+	if err != nil {
+		panic(err)
+	}
+	o(string(content))
 }
