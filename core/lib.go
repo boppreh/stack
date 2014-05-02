@@ -2,6 +2,8 @@ package core
 
 import (
 	"regexp"
+	"os"
+	"bufio"
 )
 
 func strToValue(strings []string) []Value {
@@ -58,4 +60,13 @@ func sReplace(i In, o Out) {
 	text := i().(string)
 	regex := regexp.MustCompile(pattern)
 	o(regex.ReplaceAllString(text, replacement))
+}
+
+func sRead(i In, o Out) {
+	bio := bufio.NewReader(os.Stdin)
+	line, _, err := bio.ReadLine()
+	if err != nil {
+		panic(err)
+	}
+	o(string(line))
 }
