@@ -32,9 +32,9 @@ func sEval(i In, o Out) {
 }
 
 func sIf(i In, o Out) {
-	value := i()
 	else_ := i().([]Value)
 	then := i().([]Value)
+	value := i()
 
 	var condition bool
 	switch value.(type) {

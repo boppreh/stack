@@ -63,10 +63,10 @@ func TestRun(t *testing.T) {
 	assertRun(t, "[10 20] !", []Value{10, 20})
 	assertRun(t, "[1 1 +] !", []Value{2})
 
-	assertRun(t, "[1] [2] 1 ?", []Value{1})
-	assertRun(t, "[1] [2] 0 ?", []Value{2})
-	assertRun(t, "[1 1 +] [2 2 +] 1 ?", []Value{2})
-	assertRun(t, "[1 1 +] [2 2 +] 0 ?", []Value{4})
+	assertRun(t, "1 [1] [2] ?", []Value{1})
+	assertRun(t, "0 [1] [2] ?", []Value{2})
+	assertRun(t, "1 [1 1 +] [2 2 +] ?", []Value{2})
+	assertRun(t, "0 [1 1 +] [2 2 +] ?", []Value{4})
 
 	assertRun(t, "1 [2] :a $", []Value{1})
 	assertRun(t, "[1 1 +] :a $ :a @", []Value{2})
