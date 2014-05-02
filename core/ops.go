@@ -131,4 +131,5 @@ var ops = map[string]func (In, Out){
 	"replace": sReplace,
 
 	"read": sRead,
+	"open": sOpen,
 }

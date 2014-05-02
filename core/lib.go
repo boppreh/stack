@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"os"
 	"bufio"
+	"io/ioutil"
 )
 
 func strToValue(strings []string) []Value {
@@ -69,4 +70,14 @@ func sRead(i In, o Out) {
 		panic(err)
 	}
 	o(string(line))
+}
+
+func sOpen(i In, o Out) {
+	path := i().(string)
+
+	bytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+	o(string(bytes))
 }
