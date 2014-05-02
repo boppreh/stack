@@ -16,14 +16,19 @@ func sDiv(i In, o Out) { o(i().(int) / i().(int)) }
 func sMul(i In, o Out) { o(i().(int) * i().(int)) }
 
 func sMap(i In, o Out) {
-	fn := i().(func(In, Out))
+	fnList := i().([]Value)
 	list := i().([]Value)
 
+	fullFnList := make([]Value, len(fnList) + 1)
+	copy(fullFnList[1:], fnList)
+
 	for i := range list {
-		fakeInput := func() Value { return list[i] }
-		fakeOutput := func(v Value) { list[i] = v }
-		fn(fakeInput, fakeOutput)
+		fullFnList[0] = list[i]
+		result, _ := Run(fullFnList)
+		list[i] = result[0]
 	}
+
+	o(list)
 }
 
 func sPrint(i In, o Out) {
