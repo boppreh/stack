@@ -86,4 +86,7 @@ func TestRun(t *testing.T) {
 	assertRun(t, "[. 5 < [1 + :inc @] [] ?] :inc $   1 :inc @", []Value{5})
 
 	assertRun(t, "[1 2 3] 4 append", []Value{[]Value{1, 2, 3, 4}})
+
+	assertRun(t, "[1 1 +] eval", []Value{2})
+	assertRun(t, "5 dup", []Value{5, 5})
 }

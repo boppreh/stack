@@ -98,7 +98,14 @@ func sAppend(i In, o Out) {
 }
 
 var ops = map[string]func (In, Out){
-	"eval": sEval,
 	"print": sPrint,
 	"append": sAppend,
+
+	"declare": sDecl,
+	"call": sCall,
+
+	"map": sMap,
+	"if": sIf,
+	"eval": sEval,
+	"dup": sDup,
 }
