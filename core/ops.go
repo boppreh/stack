@@ -130,6 +130,7 @@ var ops = map[string]func (In, Out){
 	"findall": sFindAll,
 	"replace": sReplace,
 
+	"input": sInput,
 	"read": sRead,
-	"open": sOpen,
+	"write": sWrite,
 }

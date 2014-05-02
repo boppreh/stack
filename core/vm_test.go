@@ -117,4 +117,7 @@ func TestLib(t *testing.T) {
 
 	assertRun(t, "'egg ham cheese' :egg :spam replace", "spam ham cheese")
 	assertRun(t, "'egg hams cheese' :ham(s?) :spam$1 replace", "egg spams cheese")
+
+	assertRun(t, "'file contents' :file.txt write")
+	assertRun(t, ":file.txt read", "file contents")
 }

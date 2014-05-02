@@ -63,7 +63,7 @@ func sReplace(i In, o Out) {
 	o(regex.ReplaceAllString(text, replacement))
 }
 
-func sRead(i In, o Out) {
+func sInput(i In, o Out) {
 	bio := bufio.NewReader(os.Stdin)
 	line, _, err := bio.ReadLine()
 	if err != nil {
@@ -72,7 +72,7 @@ func sRead(i In, o Out) {
 	o(string(line))
 }
 
-func sOpen(i In, o Out) {
+func sRead(i In, o Out) {
 	path := i().(string)
 
 	bytes, err := ioutil.ReadFile(path)
@@ -80,4 +80,13 @@ func sOpen(i In, o Out) {
 		panic(err)
 	}
 	o(string(bytes))
+}
+
+func sWrite(i In, o Out) {
+	path := i().(string)
+	contents := i().(string)
+	err := ioutil.WriteFile(path, []byte(contents), 0777)
+	if err != nil {
+		panic(err)
+	}
 }
