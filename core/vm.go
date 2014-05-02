@@ -9,44 +9,54 @@ import (
 type In func() Value
 type Out func(Value)
 
-func parseString(input chan rune, delimiter rune) string {
-	text := make([]rune, 0)
+func readUntil(input chan rune, condition func(rune) bool) (text string) {
+	buffer := make([]rune, 0)
 
 	for {
-		char, ok := <-input
-		if char == delimiter || !ok {
-			break
-		} else if char == '\\' {
-			char = <-input
-		}
+		char, ok := <- input
 
-		text = append(text, char)
-	}
-
-	return string(text)
-}
-
-func parseNumber(input chan rune, firstDigit rune) int {
-	number := make([]rune, 0)
-	number = append(number, firstDigit)
-	for {
-		digit, ok := <-input
-		if !ok || !unicode.IsNumber(digit) {
+		if condition(char) {
 			break
 		}
-		number = append(number, digit)
+
+		if char == '\\' {
+			char, ok = <- input
+		}
+
+		if !ok {
+			break
+		}
+
+		buffer = append(buffer, char)
 	}
 
-	result, _ := strconv.Atoi(string(number))
-	return result
+	return string(buffer)
 }
 
-func parseList(input chan rune, delimiter rune) []Value {
-	list, err := parseChan(input)
-	if err == nil || err.Error() != "Unexpected ]." {
-		panic("Parser error: list not closed.")
+func parseString(input chan rune, delimiter rune) (string, error) {
+	return readUntil(input, func(char rune) bool {
+		return char == delimiter
+	}), nil
+}
+
+func parseNumber(input chan rune, firstDigit rune) (int, error) {
+	strNumber := readUntil(input, func (char rune) bool {
+		return !unicode.IsNumber(char)
+	})
+
+	return strconv.Atoi(string(firstDigit) + strNumber)
+}
+
+func parseList(input chan rune, delimiter rune) (list []Value, err error) {
+	list, err = parseChan(input)
+
+	if err == nil {
+		err = errors.New("Parser error: list not closed.")
+	} else if err.Error() == "Unexpected ]." {
+		err = nil
 	}
-	return list
+
+	return
 }
 
 func strToChan(sourceCode string, c chan rune) {
@@ -59,45 +69,53 @@ func strToChan(sourceCode string, c chan rune) {
 func parseChan(input chan rune) (program []Value, err error) {
 	program = make([]Value, 0)
 
-	var closedBracket bool
 	for {
-		if closedBracket {
-			return program, errors.New("Unexpected ].")
-		}
-
-		var token Value
 		char, ok := <-input
 		if !ok {
 			return
 		}
 
+		var token Value
+		err = nil
+
 		if unicode.IsNumber(char) {
-			token = parseNumber(input, char)
+			token, err = parseNumber(input, char)
+			
 		} else if unicode.IsLetter(char) {
-			name := string(char) + parseString(input, ' ')
+			name := string(char)
+
+			var nameSuffix string
+			nameSuffix, err = parseString(input, ' ')
+			if err != nil {
+				return
+			}
+
+			name += nameSuffix
 
 			if name[len(name) - 1] == ']' {
 				name = name[:len(name) - 1]
-				closedBracket = true
+				err = errors.New("Unexpected ].")
 			}
 
 			token, ok = ops[name]
-			if !ok || token == nil {
-				return nil, errors.New("Parser error. Unexpected name " + name)
+			if !ok {
+				err = errors.New("Parser error. Unknown name " + name)
+				return
 			}
+
 		} else {
 			switch char {
 			case '"':
-				token = parseString(input, '"')
+				token, err = parseString(input, '"')
 			case '\'':
-				token = parseString(input, '\'')
+				token, err = parseString(input, '\'')
 			case ':':
-				token = parseString(input, ' ')
+				token, err = parseString(input, ' ')
 
 			case '[':
-				token = parseList(input, ']')
+				token, err = parseList(input, ']')
 			case ']':
-				return program, errors.New("Unexpected ].")
+				err = errors.New("Unexpected ].")
 
 			case '+':
 				token = sAdd
@@ -130,29 +148,36 @@ func parseChan(input chan rune) (program []Value, err error) {
 				token = sCall
 
 			case '#':
-				_ = parseString(input, '\n')
-				continue
+				_, err = parseString(input, '\n')
+				token = nil
 
 			case ' ', '\t', '\n':
-				continue
+				token = nil
 
 			default:
-				return nil, errors.New("Parser error. Unexpected value " + string(char))
+				err = errors.New("Parser error. Unexpected value " + string(char))
+				return
 			}
 		}
+		
+		if token != nil {
+			program = append(program, token)
+		}
 
-		program = append(program, token)
+		if err != nil {
+			return
+		}
 	}
 
-	return program, nil
-}
-
-func Parse(sourceCode string) (program []Value, err error) {
-	input := make(chan rune)
-	go strToChan(sourceCode, input)
-	program, err = parseChan(input)
 	return
 }
+
+func Parse(sourceCode string) ([]Value, error) {
+	input := make(chan rune)
+	go strToChan(sourceCode, input)
+	return parseChan(input)
+}
+
 
 func pushAndRun(i In, o Out, valuesToAdd []Value) {
 	for _, value := range valuesToAdd {
