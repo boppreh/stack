@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/boppreh/stack/lib"
+	"github.com/boppreh/stack/core"
 	"fmt"
 	"os"
 	"bufio"
@@ -9,12 +9,12 @@ import (
 )
 
 func runAndPrint(sourceCode string) {
-	program, err := lib.Parse(sourceCode)
+	program, err := core.Parse(sourceCode)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	result, err := lib.Run(program)
+	result, err := core.Run(program)
 	if err != nil {
 		fmt.Println(err)
 	}
