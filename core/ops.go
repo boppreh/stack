@@ -89,6 +89,17 @@ func sStr(i In, o Out) {
 	o(result)
 }
 
+func sLen(i In, o Out) {
+	value := i()
+
+	switch value.(type) {
+	case string:
+		o(len(value.(string)))
+	case []Value:
+		o(len(value.([]Value)))
+	}
+}
+
 // Using a global variable here is actually useful because it allows the
 // REPL to remember previously declared functions.
 var declared = map[string][]Value{}
@@ -111,6 +122,7 @@ func sAppend(i In, o Out) {
 
 var ops = map[string]func (In, Out){
 	"print": sPrint,
+	"len": sLen,
 	"append": sAppend,
 
 	"declare": sDecl,

@@ -125,4 +125,7 @@ func TestLib(t *testing.T) {
 	assertRun(t, "'file contents' :file.txt write")
 	assertRun(t, ":file.txt read", "file contents")
 	assertRun(t, ":file.txt delete")
+
+	assertRun(t, "[1 2 3] len", 3)
+	assertRun(t, "'asd' len", 3)
 }
