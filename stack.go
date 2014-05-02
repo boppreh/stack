@@ -1,49 +1,33 @@
-package stack
+package main
 
-type Value interface{}
+import (
+	"github.com/boppreh/stack/lib"
+	"fmt"
+	"os"
+	"io/ioutil"
+)
 
-type node struct {
-	value Value
-	next  *node
-}
+func main() {
+	var bytes []byte
+	var err error
 
-type Stack struct {
-	top  *node
-	size int
-}
-
-func New(values []Value) *Stack {
-	s := new(Stack)
-
-	for i := len(values) - 1; i >= 0; i-- {
-		s.Push(values[i])
+	if len(os.Args) == 1 {
+		bytes, err = ioutil.ReadAll(os.Stdin)	
+	} else {
+		bytes, err = ioutil.ReadFile(os.Args[1])
 	}
 
-	return s
-}
-
-func (s *Stack) Push(value Value) {
-	s.top = &node{value, s.top}
-	s.size++
-}
-
-func (s *Stack) Pop() (v Value) {
-	if s.size == 0 {
-		panic("Tried to pop from an empty stack.")
+	if err != nil {
+		panic(err)
 	}
 
-	v, s.top = s.top.value, s.top.next
-	s.size--
-	return
-}
-
-func (s *Stack) Empty() bool {
-	return s.top == nil
-}
-
-func (s *Stack) Exhaust() (result []Value) {
-	for !s.Empty() {
-		result = append(result, s.Pop())
+	program, err := lib.Parse(string(bytes))
+	result, err := lib.Run(program)
+	if err != nil {
+		panic(err)
 	}
-	return
+
+	for _, value := range result {
+		fmt.Println(value)
+	}
 }
