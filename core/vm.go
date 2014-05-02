@@ -44,7 +44,7 @@ func parseNumber(input chan rune, firstDigit rune) int {
 func parseList(input chan rune, delimiter rune) []Value {
 	list, err := parseChan(input)
 	if err == nil || err.Error() != "Unexpected ]." {
-		panic(err)
+		panic("Parser error: list not closed.")
 	}
 	return list
 }
@@ -83,7 +83,7 @@ func parseChan(input chan rune) (program []Value, err error) {
 
 			token, ok = ops[name]
 			if !ok || token == nil {
-				return nil, errors.New("Parser error. Unexpected value " + name)
+				return nil, errors.New("Parser error. Unexpected name " + name)
 			}
 		} else {
 			switch char {
