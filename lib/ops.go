@@ -91,7 +91,14 @@ func sDecl(i In, o Out) {
 	declared[name] = body
 }
 
+func sAppend(i In, o Out) {
+	value := i()
+	list := i().([]Value)
+	o(append(list, value))
+}
+
 var ops = map[string]func (In, Out){
 	"eval": sEval,
 	"print": sPrint,
+	"append": sAppend,
 }
