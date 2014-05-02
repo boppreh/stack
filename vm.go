@@ -5,6 +5,15 @@ import (
 	"unicode"
 )
 
+func ignoreComment(input chan rune) {
+	for {
+		char, ok := <- input
+		if char == '\n' || !ok {
+			return
+		}
+	}
+}
+
 func parseString(input chan rune, delimiter rune) string {
 	text := make([]rune, 0)
 
@@ -50,9 +59,9 @@ func Parse(sourceCode string) (program []Value) {
 
 	program = make([]Value, 0)	
 
-	var token Value
 
 	for {
+		var token Value
 		char, ok := <- input
 		if !ok {
 			return
@@ -69,6 +78,10 @@ func Parse(sourceCode string) (program []Value) {
 			token = parseString(input, '\'')
 		case ':':
 			token = parseString(input, ' ')
+
+		case '#':
+			ignoreComment(input)
+			continue
 
 		case ' ', '\t', '\n':
 			continue
