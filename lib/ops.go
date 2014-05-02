@@ -60,3 +60,8 @@ func sPrint(i In, o Out) {
 	fmt.Println(v)
 	o(v)
 }
+
+var ops = map[string]func (In, Out){
+	"eval": sRun,
+	"print": sPrint,
+}

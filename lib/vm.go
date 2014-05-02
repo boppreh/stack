@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"fmt"
 	"errors"
 	"strconv"
 	"unicode"
@@ -68,7 +69,7 @@ func parseList(input chan rune, delimiter rune) []Value {
 	return list
 }
 
-func lexer(sourceCode string, c chan rune) {
+func strToChan(sourceCode string, c chan rune) {
 	for _, char := range sourceCode {
 		c <- char
 	}
@@ -123,8 +124,12 @@ func parseChan(input chan rune) (program []Value, err error) {
 				continue
 
 			default:
-				return nil, errors.New("Parse error")
-				continue
+				name := string(char) + parseString(input, ' ')
+				token, ok = ops[name]
+				fmt.Println(name, token, ok)
+				if !ok || token == nil {
+					return nil, errors.New("Parser error. Unexpected value " + name)
+				}
 			}
 		}
 
@@ -136,7 +141,7 @@ func parseChan(input chan rune) (program []Value, err error) {
 
 func Parse(sourceCode string) (program []Value, err error) {
 	input := make(chan rune)
-	go lexer(sourceCode, input)
+	go strToChan(sourceCode, input)
 	program, err = parseChan(input)
 	return
 }
