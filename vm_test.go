@@ -5,7 +5,11 @@ import (
 )
 
 func assertParse(t *testing.T, sourceCode string, expected []Value) {
-	assert(t, Parse(sourceCode), expected)
+	result, err := Parse(sourceCode)
+	if err != nil {
+		t.Error(err)
+	}
+	assert(t, result, expected)
 }
 
 func TestParse(t *testing.T) {
@@ -27,4 +31,8 @@ func TestParse(t *testing.T) {
 	assertParse(t, "#Comment\n123", []Value{123})
 	assertParse(t, "123\n321 # Comment\n123", []Value{123, 321, 123})
 	assertParse(t, "123\n321 # Comment\n123", []Value{123, 321, 123})
+
+	assertParse(t, "[]", []Value{[]Value{}})
+	assertParse(t, "[1 2 3]", []Value{[]Value{1, 2, 3}})
+	assertParse(t, "[1 2 3] [] [1]", []Value{[]Value{1, 2, 3}, []Value{}, []Value{1}})
 }

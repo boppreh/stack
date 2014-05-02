@@ -1,9 +1,15 @@
 package stack
 
 import (
+	"errors"
 	"strconv"
 	"unicode"
 )
+
+func add(p Param) (Value, error) { return p().(int) + p().(int), nil }
+func sub(p Param) (Value, error) { return p().(int) - p().(int), nil }
+func div(p Param) (Value, error) { return p().(int) / p().(int), nil }
+func mul(p Param) (Value, error) { return p().(int) * p().(int), nil }
 
 func ignoreComment(input chan rune) {
 	for {
@@ -46,6 +52,24 @@ func parseNumber(input chan rune, firstDigit rune) int {
 	return result
 }
 
+func parseList(input chan rune, delimiter rune) []Value {
+	listChan := make(chan rune)
+
+	go func() {
+		for {
+			char, ok := <-input
+			if char == delimiter || !ok {
+				close(listChan)
+				return
+			}
+			listChan <- char
+		}
+	}()
+
+	list, _ := parseChan(listChan)
+	return list
+}
+
 func lexer(sourceCode string, c chan rune) {
 	for _, char := range sourceCode {
 		c <- char
@@ -53,12 +77,8 @@ func lexer(sourceCode string, c chan rune) {
 	close(c)
 }
 
-func Parse(sourceCode string) (program []Value) {
-	input := make(chan rune)
-	go lexer(sourceCode, input)
-
+func parseChan(input chan rune) (program []Value, err error) {
 	program = make([]Value, 0)	
-
 
 	for {
 		var token Value
@@ -69,25 +89,45 @@ func Parse(sourceCode string) (program []Value) {
 
 		if unicode.IsNumber(char) {
 			token = parseNumber(input, char)
+		} else {
+			switch char {
+			case '"':
+				token = parseString(input, '"')
+			case '\'':
+				token = parseString(input, '\'')
+			case ':':
+				token = parseString(input, ' ')
+
+			case '[':
+				token = parseList(input, ']')
+
+			case '+': token = sum
+			case '-': token = sub
+			case '/': token = div
+			case '*': token = mul
+
+			case '#':
+				ignoreComment(input)
+				continue
+
+			case ' ', '\t', '\n':
+				continue
+
+			default:
+				return nil, errors.New("Parse error")
+				continue
+			}
 		}
 
-		switch char {
-		case '"':
-			token = parseString(input, '"')
-		case '\'':
-			token = parseString(input, '\'')
-		case ':':
-			token = parseString(input, ' ')
-
-		case '#':
-			ignoreComment(input)
-			continue
-
-		case ' ', '\t', '\n':
-			continue
-		}
 		program = append(program, token)
 	}
 
+	return program, nil
+}
+
+func Parse(sourceCode string) (program []Value, err error) {
+	input := make(chan rune)
+	go lexer(sourceCode, input)
+	program, err = parseChan(input)
 	return
 }
