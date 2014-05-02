@@ -10,9 +10,13 @@ import (
 
 func runAndPrint(sourceCode string) {
 	program, err := lib.Parse(sourceCode)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	result, err := lib.Run(program)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	for _, value := range result {
