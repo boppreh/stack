@@ -26,5 +26,9 @@ func TestParse(t *testing.T) {
 	assertParse(t, "12345", []Value{12345})
 	assertParse(t, "123 321", []Value{123, 321})
 
+	assertParse(t, "#Comment", []Value{})
+	assertParse(t, "\n  #Comment", []Value{})
+	assertParse(t, "#Comment\n123", []Value{123})
+	assertParse(t, "123\n321 # Comment\n123", []Value{123, 321, 123})
 	assertParse(t, "123\n321 # Comment\n123", []Value{123, 321, 123})
 }
