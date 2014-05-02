@@ -52,4 +52,6 @@ func TestParse(t *testing.T) {
 func TestRun(t *testing.T) {
 	assertRun(t, "1", []Value{1})
 	assertRun(t, "1 2 3", []Value{3, 2, 1})
+	assertRun(t, "1 1 +", []Value{2})
+	assertRun(t, "1 1 + 2 *", []Value{4})
 }

@@ -1,7 +1,5 @@
 package stack
 
-import "errors"
-
 type Value interface{}
 
 type node struct {
@@ -13,10 +11,6 @@ type Stack struct {
 	top  *node
 	size int
 }
-
-type Param func() Value
-
-type Op func(Param) (Value, error)
 
 func New(values []Value) *Stack {
 	s := new(Stack)
@@ -47,22 +41,6 @@ func (s *Stack) Pop() (v Value) {
 
 func (s *Stack) Empty() bool {
 	return s.top == nil
-}
-
-func (s *Stack) Apply(op Op) (err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = errors.New("Not enough values in the stack to apply operator.")
-		}
-	}()
-
-	var result Value
-	result, err = op(s.Pop)
-
-	if err == nil {
-		s.Push(result)
-	}
-	return
 }
 
 func (s *Stack) Exhaust() (result []Value) {

@@ -24,12 +24,6 @@ func assertStack(t *testing.T, s *Stack, expectedValues ...Value) {
 	}
 }
 
-func assertError(t *testing.T, s *Stack, op Op) {
-	if s.Apply(op) == nil {
-		t.Errorf("Expected error, but op completely normally.")
-	}
-}
-
 func increment(p Param) (Value, error)   { return p().(int) + 1, nil }
 func sum(p Param) (Value, error)         { return p().(int) + p().(int), nil }
 func deepthought(p Param) (Value, error) { return 42, nil }
@@ -46,22 +40,4 @@ func TestStackStruct(t *testing.T) {
 	assertStack(t, s, 1, 15, 20)
 
 	assertStack(t, New([]Value{1, 15, 20}), 1, 15, 20)
-}
-
-func TestStackApply(t *testing.T) {
-	s := new(Stack)
-
-	s.Push(1)
-	s.Apply(increment)
-	assertStack(t, s, 2)
-
-	s.Push(3)
-	s.Push(5)
-	s.Apply(sum)
-	assertStack(t, s, 8)
-
-	s.Apply(deepthought)
-	assertStack(t, s, 42)
-
-	assertError(t, s, increment)
 }

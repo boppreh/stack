@@ -7,10 +7,19 @@ import (
 	"unicode"
 )
 
+type Param func() Value
+
+type Op func(Param) (Value, error)
+
 func add(p Param) (Value, error) { return p().(int) + p().(int), nil }
 func sub(p Param) (Value, error) { return p().(int) - p().(int), nil }
 func div(p Param) (Value, error) { return p().(int) / p().(int), nil }
 func mul(p Param) (Value, error) { return p().(int) * p().(int), nil }
+func print(p Param) (Value, error) {
+	v := p()
+	fmt.Println(v);
+	return v, nil
+}
 
 func ignoreComment(input chan rune) {
 	for {
