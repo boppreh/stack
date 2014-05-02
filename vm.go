@@ -148,7 +148,11 @@ func Run(program []Value) ([]Value, error) {
 	for _, value := range program {
 		switch value.(type) {
 		case func(Param) (Value, error):
-			s.Push(value.(func(Param) (Value, error))(s.Pop))
+			result, err := value.(func(Param) (Value, error))(s.Pop)
+			if err != nil {
+				return nil, err
+			}
+			s.Push(result)
 
 		default:
 			s.Push(value)
