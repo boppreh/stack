@@ -52,6 +52,7 @@ func TestParse(t *testing.T) {
 
 	assertParse(t, "[]", []Value{})
 	assertParse(t, "[1 2 3]", []Value{1, 2, 3})
+	assertParse(t, "[1 2 3 :asdf]", []Value{1, 2, 3, "asdf"})
 	assertParse(t, "[1 2 3] [] [1]", []Value{1, 2, 3}, []Value{}, []Value{1})
 	assertParse(t, "[[]]", []Value{[]Value{}})
 	assertParse(t, "[1 [2 3] 4]", []Value{1, []Value{2, 3}, 4})
