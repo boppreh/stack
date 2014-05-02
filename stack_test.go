@@ -24,10 +24,6 @@ func assertStack(t *testing.T, s *Stack, expectedValues ...Value) {
 	}
 }
 
-func increment(p Param) (Value, error)   { return p().(int) + 1, nil }
-func sum(p Param) (Value, error)         { return p().(int) + p().(int), nil }
-func deepthought(p Param) (Value, error) { return 42, nil }
-
 func TestStackStruct(t *testing.T) {
 	s := new(Stack)
 
