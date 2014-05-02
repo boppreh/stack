@@ -91,4 +91,8 @@ func TestRun(t *testing.T) {
 func TestLib(t *testing.T) {
 	assertRun(t, ":aabb :a+b+ matches", true)
 	assertRun(t, ":aabb :ab+ matches", false)
+
+	assertRun(t, ":aabb :a+b+ contains", true)
+	assertRun(t, ":aabb :ab+ contains", true)
+	assertRun(t, ":aabb :ab+c contains", false)
 }

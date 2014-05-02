@@ -125,4 +125,5 @@ var ops = map[string]func (In, Out){
 	"str": sStr,
 
 	"matches": sMatches,
+	"contains": sContains,
 }
