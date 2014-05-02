@@ -8,18 +8,16 @@ import (
 )
 
 type In func() Value
-type Out func(Value)
+type Out func(...Value)
 
-type Op func(In) (Value, error)
-
-func add(p In) (Value, error) { return p().(int) + p().(int), nil }
-func sub(p In) (Value, error) { return p().(int) - p().(int), nil }
-func div(p In) (Value, error) { return p().(int) / p().(int), nil }
-func mul(p In) (Value, error) { return p().(int) * p().(int), nil }
-func print(p In) (Value, error) {
-	v := p()
+func add(i In, o Out) { o(i().(int) + i().(int)) }
+func sub(i In, o Out) { o(i().(int) - i().(int)) }
+func div(i In, o Out) { o(i().(int) / i().(int)) }
+func mul(i In, o Out) { o(i().(int) * i().(int)) }
+func print(i In, o Out) {
+	v := i()
 	fmt.Println(v);
-	return v, nil
+	o(v)
 }
 
 func ignoreComment(input chan rune) {
@@ -148,12 +146,8 @@ func Run(program []Value) ([]Value, error) {
 
 	for _, value := range program {
 		switch value.(type) {
-		case func(In) (Value, error):
-			result, err := value.(func(In) (Value, error))(s.Pop)
-			if err != nil {
-				return nil, err
-			}
-			s.Push(result)
+		case func(In, Out):
+			value.(func(In, Out))(s.Pop, s.Push)
 
 		default:
 			s.Push(value)
