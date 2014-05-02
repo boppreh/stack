@@ -29,17 +29,29 @@ func sGt(i In, o Out) {
 	o(i().(int) < i().(int))
 }
 
+type resultStruct struct {
+	i int
+	value Value
+}
 func sMap(i In, o Out) {
 	fnList := i().([]Value)
 	list := i().([]Value)
 
-	fullFnList := make([]Value, len(fnList)+1)
-	copy(fullFnList[1:], fnList)
-
+	results := make(chan resultStruct)
 	for i := range list {
-		fullFnList[0] = list[i]
-		result, _ := Run(fullFnList)
-		list[i] = result[0]
+		go func(i int, firstValue Value, fnList []Value) {
+			fullFnList := make([]Value, len(fnList)+1)
+			fullFnList[0] = firstValue
+			copy(fullFnList[1:], fnList)
+
+			value, _ := Run(fullFnList)	
+			results <- resultStruct{i, value[0]}
+		}(i, list[i], fnList)
+	}
+
+	for _ = range list {
+		result := <- results
+		list[result.i] = result.value
 	}
 
 	o(list)
