@@ -59,7 +59,12 @@ func strToChan(sourceCode string, c chan rune) {
 func parseChan(input chan rune) (program []Value, err error) {
 	program = make([]Value, 0)
 
+	var closedBracket bool
 	for {
+		if closedBracket {
+			return program, errors.New("Unexpected ].")
+		}
+
 		var token Value
 		char, ok := <-input
 		if !ok {
@@ -68,6 +73,18 @@ func parseChan(input chan rune) (program []Value, err error) {
 
 		if unicode.IsNumber(char) {
 			token = parseNumber(input, char)
+		} else if unicode.IsLetter(char) {
+			name := string(char) + parseString(input, ' ')
+
+			if name[len(name) - 1] == ']' {
+				name = name[:len(name) - 1]
+				closedBracket = true
+			}
+
+			token, ok = ops[name]
+			if !ok || token == nil {
+				return nil, errors.New("Parser error. Unexpected value " + name)
+			}
 		} else {
 			switch char {
 			case '"':
@@ -120,11 +137,7 @@ func parseChan(input chan rune) (program []Value, err error) {
 				continue
 
 			default:
-				name := string(char) + parseString(input, ' ')
-				token, ok = ops[name]
-				if !ok || token == nil {
-					return nil, errors.New("Parser error. Unexpected value " + name)
-				}
+				return nil, errors.New("Parser error. Unexpected value " + string(char))
 			}
 		}
 
