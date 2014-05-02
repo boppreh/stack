@@ -5,6 +5,10 @@ import (
 )
 
 func assertParse(t *testing.T, sourceCode string, expected... Value) {
+	if expected == nil {
+		expected = []Value{}
+	}
+
 	result, err := Parse(sourceCode)
 	if err != nil {
 		t.Error(err)
@@ -13,6 +17,10 @@ func assertParse(t *testing.T, sourceCode string, expected... Value) {
 }
 
 func assertRun(t *testing.T, sourceCode string, expected... Value) {
+	if expected == nil {
+		expected = []Value{}
+	}
+
 	program, err := Parse(sourceCode)
 	if err != nil {
 		t.Error(err)
@@ -25,6 +33,10 @@ func assertRun(t *testing.T, sourceCode string, expected... Value) {
 }
 
 func TestParse(t *testing.T) {
+	assertParse(t, "")
+	assertParse(t, "  ")
+	assertParse(t, "  \t \n  ")
+
 	assertParse(t, "\"first string\"", "first string")
 	assertParse(t, ":symbol", "symbol")
 	assertParse(t, ":symbol :symbol2", "symbol", "symbol2")
@@ -97,6 +109,7 @@ func TestLib(t *testing.T) {
 	assertRun(t, ":aabb :ab+c contains", false)
 
 	assertRun(t, ":acccbd :(c+bb) find", nil)
+	assertRun(t, ":acccbd :c+b? find", []Value{})
 	assertRun(t, ":acccbd :(c+b?) find", []Value{"cccb"})
 
 	assertRun(t, "'abc ac ab' :(aee?) findall", []Value{})
