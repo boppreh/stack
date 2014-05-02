@@ -44,13 +44,13 @@ func readWordAndCloseList(input chan rune) (text string, closedList bool) {
 			break
 		}
 
-		if char == '\\' {
-			char, ok = <- input
-		}
-
 		if char == ']' {
 			closedList = true
 			break
+		}
+
+		if char == '\\' {
+			char, ok = <- input
 		}
 
 		if !ok {

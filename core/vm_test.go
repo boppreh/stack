@@ -49,6 +49,7 @@ func TestParse(t *testing.T) {
 	assertParse(t, "#Comment\n123", 123)
 	assertParse(t, "123\n321 # Comment\n123", 123, 321, 123)
 	assertParse(t, "123\n321 # Comment\n123", 123, 321, 123)
+	assertParse(t, ":asd\\]f", "asd]f")
 
 	assertParse(t, "[]", []Value{})
 	assertParse(t, "[1]", []Value{1})
