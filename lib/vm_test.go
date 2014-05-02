@@ -47,6 +47,9 @@ func TestParse(t *testing.T) {
 	assertParse(t, "[]", []Value{[]Value{}})
 	assertParse(t, "[1 2 3]", []Value{[]Value{1, 2, 3}})
 	assertParse(t, "[1 2 3] [] [1]", []Value{[]Value{1, 2, 3}, []Value{}, []Value{1}})
+	assertParse(t, "[[]]", []Value{[]Value{[]Value{}}})
+	assertParse(t, "[1 [2 3] 4]", []Value{[]Value{1, []Value{2, 3}, 4}})
+	assertParse(t, "[[2 3]]", []Value{[]Value{[]Value{2, 3}}})
 }
 
 func TestRun(t *testing.T) {
@@ -71,6 +74,8 @@ func TestRun(t *testing.T) {
 	assertRun(t, "0 [1] [2] ?", []Value{2})
 	assertRun(t, "1 [1 1 +] [2 2 +] ?", []Value{2})
 	assertRun(t, "0 [1 1 +] [2 2 +] ?", []Value{4})
+	assertRun(t, "0 0 = [1] [2] ?", []Value{1})
+	assertRun(t, "0 0 = [1] [2] ?", []Value{1})
 
 	assertRun(t, "1 [2] :a $", []Value{1})
 	assertRun(t, "[1 1 +] :a $ :a @", []Value{2})

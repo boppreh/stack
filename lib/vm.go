@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"fmt"
 	"errors"
 	"strconv"
 	"unicode"
@@ -9,15 +8,6 @@ import (
 
 type In func() Value
 type Out func(Value)
-
-func ignoreComment(input chan rune) {
-	for {
-		char, ok := <-input
-		if char == '\n' || !ok {
-			return
-		}
-	}
-}
 
 func parseString(input chan rune, delimiter rune) string {
 	text := make([]rune, 0)
@@ -52,20 +42,10 @@ func parseNumber(input chan rune, firstDigit rune) int {
 }
 
 func parseList(input chan rune, delimiter rune) []Value {
-	listChan := make(chan rune)
-
-	go func() {
-		for {
-			char, ok := <-input
-			if char == delimiter || !ok {
-				close(listChan)
-				return
-			}
-			listChan <- char
-		}
-	}()
-
-	list, _ := parseChan(listChan)
+	list, err := parseChan(input)
+	if err == nil || err.Error() != "Unexpected ]." {
+		panic(err)
+	}
 	return list
 }
 
@@ -99,6 +79,8 @@ func parseChan(input chan rune) (program []Value, err error) {
 
 			case '[':
 				token = parseList(input, ']')
+			case ']':
+				return program, errors.New("Unexpected ].")
 
 			case '+':
 				token = sAdd
@@ -129,7 +111,7 @@ func parseChan(input chan rune) (program []Value, err error) {
 				token = sCall
 
 			case '#':
-				ignoreComment(input)
+				_ = parseString(input, '\n')
 				continue
 
 			case ' ', '\t', '\n':
@@ -138,7 +120,6 @@ func parseChan(input chan rune) (program []Value, err error) {
 			default:
 				name := string(char) + parseString(input, ' ')
 				token, ok = ops[name]
-				fmt.Println(name, token, ok)
 				if !ok || token == nil {
 					return nil, errors.New("Parser error. Unexpected value " + name)
 				}
