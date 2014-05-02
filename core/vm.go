@@ -9,13 +9,13 @@ import (
 type In func() Value
 type Out func(Value)
 
-func readUntil(input chan rune, condition func(rune) bool) (text string) {
+func readUntil(input chan rune, delimiter rune) (text string) {
 	buffer := make([]rune, 0)
 
 	for {
 		char, ok := <- input
 
-		if condition(char) {
+		if char == delimiter {
 			break
 		}
 
@@ -33,30 +33,35 @@ func readUntil(input chan rune, condition func(rune) bool) (text string) {
 	return string(buffer)
 }
 
-func parseString(input chan rune, delimiter rune) (string, error) {
-	return readUntil(input, func(char rune) bool {
-		return char == delimiter
-	}), nil
-}
+func readWordAndCloseList(input chan rune) (text string, closedList bool) {
 
-func parseNumber(input chan rune, firstDigit rune) (int, error) {
-	strNumber := readUntil(input, func (char rune) bool {
-		return !unicode.IsNumber(char)
-	})
+	buffer := make([]rune, 0)
 
-	return strconv.Atoi(string(firstDigit) + strNumber)
-}
+	for {
+		char, ok := <- input
 
-func parseList(input chan rune, delimiter rune) (list []Value, err error) {
-	list, err = parseChan(input)
+		if unicode.IsSpace(char) {
+			break
+		}
 
-	if err == nil {
-		err = errors.New("Parser error: list not closed.")
-	} else if err.Error() == "Unexpected ]." {
-		err = nil
+		if char == '\\' {
+			char, ok = <- input
+		}
+
+		if char == ']' {
+			closedList = true
+			break
+		}
+
+		if !ok {
+			break
+		}
+
+		buffer = append(buffer, char)
 	}
 
-	return
+	return string(buffer), closedList
+
 }
 
 func strToChan(sourceCode string, c chan rune) {
@@ -66,116 +71,121 @@ func strToChan(sourceCode string, c chan rune) {
 	close(c)
 }
 
-func parseChan(input chan rune) (program []Value, err error) {
-	program = make([]Value, 0)
+func Parse(sourceCode string) ([]Value, error) {
+	input := make(chan rune)
+	go strToChan(sourceCode, input)
 
-	for {
+	s := new(Stack)
+	s.Push(make([]Value, 0))
+
+	addToken := func(token Value) {
+		list := s.Pop().([]Value)
+		s.Push(append(list, token))
+	}
+
+	closeList := func () {
+		list := s.Pop().([]Value)
+		addToken(list)
+	}
+
+	var err error
+
+	for err == nil {
 		char, ok := <-input
 		if !ok {
-			return
+			break
 		}
 
-		var token Value
-		err = nil
-
 		if unicode.IsNumber(char) {
-			token, err = parseNumber(input, char)
+			rest, closedList := readWordAndCloseList(input)
+
+			var number int
+			number, err = strconv.Atoi(string(char) + rest)
+			addToken(number)
+
+			if closedList {
+				closeList()
+			}
 			
 		} else if unicode.IsLetter(char) {
-			name := string(char)
+			suffix, closedList := readWordAndCloseList(input)
+			name := string(char) + suffix
 
-			var nameSuffix string
-			nameSuffix, err = parseString(input, ' ')
-			if err != nil {
-				return
-			}
-
-			name += nameSuffix
-
-			if name[len(name) - 1] == ']' {
-				name = name[:len(name) - 1]
-				err = errors.New("Unexpected ].")
-			}
-
-			token, ok = ops[name]
-			if !ok {
+			function, ok := ops[name]
+			if ok {
+				addToken(function)
+			} else {
 				err = errors.New("Parser error. Unknown name " + name)
-				return
+			}
+
+			if closedList {
+				closeList()
 			}
 
 		} else {
 			switch char {
 			case '"':
-				token, err = parseString(input, '"')
+				addToken(readUntil(input, '"'))
 			case '\'':
-				token, err = parseString(input, '\'')
+				addToken(readUntil(input, '\''))
 			case ':':
-				token, err = parseString(input, ' ')
+				str, closedList := readWordAndCloseList(input)
+				addToken(str)
+				if closedList {
+					closeList()
+				}
 
 			case '[':
-				token, err = parseList(input, ']')
+				s.Push(make([]Value, 0))
 			case ']':
-				err = errors.New("Unexpected ].")
+				closeList()
 
 			case '+':
-				token = sAdd
+				addToken(sAdd)
 			case '-':
-				token = sSub
+				addToken(sSub)
 			case '/':
-				token = sDiv
+				addToken(sDiv)
 			case '*':
-				token = sMul
+				addToken(sMul)
 
 			case '=':
-				token = sEq
+				addToken(sEq)
 			case '>':
-				token = sGt
+				addToken(sGt)
 			case '<':
-				token = sLt
+				addToken(sLt)
 
 			case '%':
-				token = sMap
+				addToken(sMap)
 			case '?':
-				token = sIf
+				addToken(sIf)
 			case '!':
-				token = sEval
+				addToken(sEval)
 			case '.':
-				token = sDup
+				addToken(sDup)
 
 			case '$':
-				token = sDecl
+				addToken(sDecl)
 			case '@':
-				token = sCall
+				addToken(sCall)
 
 			case '#':
-				_, err = parseString(input, '\n')
-				token = nil
+				_ = readUntil(input, '\n')
 
 			case ' ', '\t', '\n':
-				token = nil
+				continue
 
 			default:
 				err = errors.New("Parser error. Unexpected value " + string(char))
-				return
 			}
-		}
-		
-		if token != nil {
-			program = append(program, token)
-		}
-
-		if err != nil {
-			return
 		}
 	}
 
-	return
-}
-
-func Parse(sourceCode string) ([]Value, error) {
-	input := make(chan rune)
-	go strToChan(sourceCode, input)
-	return parseChan(input)
+	if s.size > 1 {
+		err = errors.New("Parser error: literal list not closed.")
+	}
+	return s.Pop().([]Value), err
 }
 
 
