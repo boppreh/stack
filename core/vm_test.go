@@ -114,4 +114,7 @@ func TestLib(t *testing.T) {
 
 	assertRun(t, "'abc ac ab' :(aee?) findall", []Value{})
 	assertRun(t, "'abc ac ab' :(abc?) findall", []Value{[]Value{"abc"}, []Value{"ab"}})
+
+	assertRun(t, "'egg ham cheese' :egg :spam replace", "spam ham cheese")
+	assertRun(t, "'egg hams cheese' :ham(s?) :spam$1 replace", "egg spams cheese")
 }

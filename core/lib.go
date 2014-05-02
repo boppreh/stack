@@ -51,3 +51,11 @@ func sFindAll(i In, o Out) {
 
 	o(results)
 }
+
+func sReplace(i In, o Out) {
+	replacement := i().(string)
+	pattern := i().(string)
+	text := i().(string)
+	regex := regexp.MustCompile(pattern)
+	o(regex.ReplaceAllString(text, replacement))
+}
