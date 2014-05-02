@@ -7,7 +7,7 @@ import (
 
 func assert(t *testing.T, result Value, expected Value) {
 	if !reflect.DeepEqual(result, expected) {
-		t.Errorf("Expected %v, got %v", expected, result)
+		t.Errorf("Expected %#v, got %#v", expected, result)
 	}
 }
 
