@@ -100,6 +100,19 @@ func sLen(i In, o Out) {
 	}
 }
 
+func sIndex(i In, o Out) {
+	index := i().(int)
+	value := i()
+
+	switch value.(type) {
+	case string:
+		char := value.(string)[index]
+		o(string(char))
+	case []Value:
+		o(value.([]Value)[index])
+	}
+}
+
 // Using a global variable here is actually useful because it allows the
 // REPL to remember previously declared functions.
 var declared = map[string][]Value{}
@@ -149,4 +162,5 @@ var ops = map[string]func (In, Out){
 
 	"get": sGet,
 	"download": sDownload,
+	"index": sIndex,
 }

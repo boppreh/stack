@@ -76,9 +76,12 @@ func TestRun(t *testing.T) {
 	assertRun(t, "[1 2 3] [1 +] % [2 *] %", []Value{4, 6, 8})
 	assertRun(t, "[1 2 3] [1 + 2 *] %", []Value{4, 6, 8})
 
-	assertRun(t, "[10] !", 10)
-	assertRun(t, "[10 20] !", 10, 20)
-	assertRun(t, "[1 1 +] !", 2)
+	assertRun(t, "[1 2 3] len", 3)
+	assertRun(t, "'asd' len", 3)
+
+	assertRun(t, "[1 2 3] 1 index", 2)
+	assertRun(t, "[1 2 3] 1 !", 2)
+	assertRun(t, "'asd' 1 !", "s")
 
 	assertRun(t, "1 [1] [2] ?", 1)
 	assertRun(t, "0 [1] [2] ?", 2)
@@ -125,7 +128,4 @@ func TestLib(t *testing.T) {
 	assertRun(t, "'file contents' :file.txt write")
 	assertRun(t, ":file.txt read", "file contents")
 	assertRun(t, ":file.txt delete")
-
-	assertRun(t, "[1 2 3] len", 3)
-	assertRun(t, "'asd' len", 3)
 }

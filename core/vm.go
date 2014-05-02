@@ -161,7 +161,7 @@ func Parse(sourceCode string) ([]Value, error) {
 			case '?':
 				addToken(sIf)
 			case '!':
-				addToken(sEval)
+				addToken(sIndex)
 			case '.':
 				addToken(sDup)
 
