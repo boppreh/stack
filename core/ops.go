@@ -113,6 +113,13 @@ func sIndex(i In, o Out) {
 	}
 }
 
+func sTranspose(i In, o Out) {
+	value1 := i()
+	value2 := i()
+	o(value1)
+	o(value2)
+}
+
 // Using a global variable here is actually useful because it allows the
 // REPL to remember previously declared functions.
 var declared = map[string][]Value{}
@@ -163,4 +170,6 @@ var ops = map[string]func (In, Out){
 	"get": sGet,
 	"download": sDownload,
 	"index": sIndex,
+	
+	"transpose": sTranspose,
 }

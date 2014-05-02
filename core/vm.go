@@ -169,6 +169,8 @@ func Parse(sourceCode string) ([]Value, error) {
 				addToken(sDecl)
 			case '@':
 				addToken(sCall)
+			case '&':
+				addToken(sTranspose)
 
 			case '#':
 				_ = readUntil(input, '\n')

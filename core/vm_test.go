@@ -83,6 +83,8 @@ func TestRun(t *testing.T) {
 	assertRun(t, "[1 2 3] 1 !", 2)
 	assertRun(t, "'asd' 1 !", "s")
 
+	assertRun(t, "1 2 &", 1, 2)
+
 	assertRun(t, "1 [1] [2] ?", 1)
 	assertRun(t, "0 [1] [2] ?", 2)
 	assertRun(t, "1 [1 1 +] [2 2 +] ?", 2)
@@ -97,6 +99,7 @@ func TestRun(t *testing.T) {
 	assertRun(t, "1 2 . + +", 5)
 
 	assertRun(t, "[. 5 < [1 + :inc @] [] ?] :inc $   1 :inc @", 5)
+	assertRun(t, "[:a $ 2 2 :a @ 3 4 :a @ :a @] :m $  [+] :m @", 11)
 
 	assertRun(t, "[1 2 3] 4 append", []Value{1, 2, 3, 4})
 
