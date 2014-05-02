@@ -95,4 +95,10 @@ func TestLib(t *testing.T) {
 	assertRun(t, ":aabb :a+b+ contains", true)
 	assertRun(t, ":aabb :ab+ contains", true)
 	assertRun(t, ":aabb :ab+c contains", false)
+
+	assertRun(t, ":acccbd :(c+bb) find", nil)
+	assertRun(t, ":acccbd :(c+b?) find", []Value{"cccb"})
+
+	assertRun(t, "'abc ac ab' :(aee?) findall", []Value{})
+	assertRun(t, "'abc ac ab' :(abc?) findall", []Value{[]Value{"abc"}, []Value{"ab"}})
 }
