@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"path"
 )
 
 func strToValue(strings []string) []Value {
@@ -75,9 +76,9 @@ func sInput(i In, o Out) {
 }
 
 func sRead(i In, o Out) {
-	path := i().(string)
+	file := i().(string)
 
-	bytes, err := ioutil.ReadFile(path)
+	bytes, err := ioutil.ReadFile(file)
 	if err != nil {
 		panic(err)
 	}
@@ -85,17 +86,17 @@ func sRead(i In, o Out) {
 }
 
 func sWrite(i In, o Out) {
-	path := i().(string)
+	file := i().(string)
 	contents := i().(string)
-	err := ioutil.WriteFile(path, []byte(contents), 0777)
+	err := ioutil.WriteFile(file, []byte(contents), 0777)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func sDelete(i In, o Out) {
-	path := i().(string)
-	err := os.Remove(path)
+	file := i().(string)
+	err := os.Remove(file)
 	if err != nil {
 		panic(err)
 	}
@@ -117,4 +118,14 @@ func sGet(i In, o Out) {
 		panic(err)
 	}
 	o(string(content))
+}
+
+func sDownload(i In, o Out) {
+	url := i().(string)
+	file := path.Base(url)
+
+	o(url)
+	sGet(i, o)
+	o(file)
+	sWrite(i, o)
 }

@@ -136,4 +136,5 @@ var ops = map[string]func (In, Out){
 	"delete": sDelete,
 
 	"get": sGet,
+	"download": sDownload,
 }
