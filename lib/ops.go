@@ -61,6 +61,20 @@ func sPrint(i In, o Out) {
 	o(v)
 }
 
+// Using a global variable here is actually useful because it allows the
+// REPL to remember previously declared functions.
+var declared = map[string][]Value{}
+func sCall(i In, o Out) {
+	name := i().(string)
+	o(declared[name])
+	sRun(i, o)
+}
+func sDecl(i In, o Out) {
+	name := i().(string)
+	body := i().([]Value)
+	declared[name] = body
+}
+
 var ops = map[string]func (In, Out){
 	"eval": sRun,
 	"print": sPrint,

@@ -67,4 +67,7 @@ func TestRun(t *testing.T) {
 	assertRun(t, "[1] [2] 0 ?", []Value{2})
 	assertRun(t, "[1 1 +] [2 2 +] 1 ?", []Value{2})
 	assertRun(t, "[1 1 +] [2 2 +] 0 ?", []Value{4})
+
+	assertRun(t, "1 [2] :a $", []Value{1})
+	assertRun(t, "[1 1 +] :a $ :a @", []Value{2})
 }

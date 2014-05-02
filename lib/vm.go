@@ -116,6 +116,11 @@ func parseChan(input chan rune) (program []Value, err error) {
 			case '!':
 				token = sRun
 
+			case '$':
+				token = sDecl
+			case '@':
+				token = sCall
+
 			case '#':
 				ignoreComment(input)
 				continue
