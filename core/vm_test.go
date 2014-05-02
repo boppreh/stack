@@ -89,5 +89,6 @@ func TestRun(t *testing.T) {
 }
 
 func TestLib(t *testing.T) {
-	//assertRun(t, "", []Value)
+	assertRun(t, ":aabb :a+b+ matches", true)
+	assertRun(t, ":aabb :ab+ matches", false)
 }
