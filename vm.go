@@ -2,6 +2,7 @@ package stack
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"unicode"
 )
@@ -130,4 +131,20 @@ func Parse(sourceCode string) (program []Value, err error) {
 	go lexer(sourceCode, input)
 	program, err = parseChan(input)
 	return
+}
+
+func Run(program []Value) ([]Value, error) {
+	s := new(Stack)
+
+	for _, value := range program {
+		switch value.(type) {
+		case func(Param) (Value, error):
+			s.Push(value.(func(Param) (Value, error))(s.Pop))
+
+		default:
+			s.Push(value)
+		}
+	}
+
+	return s.Exhaust(), nil
 }

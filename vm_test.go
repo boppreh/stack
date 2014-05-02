@@ -12,6 +12,18 @@ func assertParse(t *testing.T, sourceCode string, expected []Value) {
 	assert(t, result, expected)
 }
 
+func assertRun(t *testing.T, sourceCode string, expected []Value) {
+	program, err := Parse(sourceCode)
+	if err != nil {
+		t.Error(err)
+	}
+	result, err2 := Run(program)
+	if err2 != nil {
+		t.Error(err2)
+	}
+	assert(t, result, expected)
+}
+
 func TestParse(t *testing.T) {
 	assertParse(t, "", []Value{})
 	assertParse(t, "   ", []Value{})
@@ -35,4 +47,9 @@ func TestParse(t *testing.T) {
 	assertParse(t, "[]", []Value{[]Value{}})
 	assertParse(t, "[1 2 3]", []Value{[]Value{1, 2, 3}})
 	assertParse(t, "[1 2 3] [] [1]", []Value{[]Value{1, 2, 3}, []Value{}, []Value{1}})
+}
+
+func TestRun(t *testing.T) {
+	assertRun(t, "1", []Value{1})
+	assertRun(t, "1 2 3", []Value{3, 2, 1})
 }
