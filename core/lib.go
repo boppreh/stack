@@ -2,8 +2,15 @@ package core
 
 import (
 	"regexp"
-	"fmt"
 )
+
+func strToValue(strings []string) []Value {
+	values := make([]Value, 0)
+	for _, str := range strings {
+		values = append(values, str)
+	}
+	return values
+}
 
 func sMatches(i In, o Out) {
 	o("^" + i().(string) + "$")
@@ -19,21 +26,28 @@ func sContains(i In, o Out) {
 
 func sFind(i In, o Out) {
 	regex := regexp.MustCompile(i().(string))
-	fmt.Println(regex)
 	submatches := regex.FindStringSubmatch(i().(string))
 	if submatches == nil {
 		o(nil)
 	} else {
-		o(submatches[1:])
+		o(strToValue(submatches[1:]))
 	}
 }
 
 func sFindAll(i In, o Out) {
 	regex := regexp.MustCompile(i().(string))
 	allSubmatches := regex.FindAllStringSubmatch(i().(string), -1)
-	fmt.Println(allSubmatches)
-	for i, submatch := range allSubmatches {
-		allSubmatches[i] = submatch[1:]
+
+	if allSubmatches == nil {
+		o([]Value{})
+		return
 	}
-	o(allSubmatches)
+
+	results := make([]Value, len(allSubmatches))
+
+	for i, submatch := range allSubmatches {
+		results[i] = strToValue(submatch[1:])
+	}
+
+	o(results)
 }
