@@ -70,7 +70,7 @@ func Parse(sourceCode string) (program []Value) {
 		case ':':
 			token = parseString(input, ' ')
 
-		case ' ':
+		case ' ', '\t', '\n':
 			continue
 		}
 		program = append(program, token)
