@@ -11,7 +11,7 @@ func assertParse(t *testing.T, sourceCode string, expected... Value) {
 
 	result, err := Parse(sourceCode)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("%v %q", err, sourceCode)
 	}
 	assert(t, result, expected)
 }
@@ -51,6 +51,8 @@ func TestParse(t *testing.T) {
 	assertParse(t, "123\n321 # Comment\n123", 123, 321, 123)
 
 	assertParse(t, "[]", []Value{})
+	assertParse(t, "[1]", []Value{1})
+	assertParse(t, "[:name]", []Value{"name"})
 	assertParse(t, "[1 2 3]", []Value{1, 2, 3})
 	assertParse(t, "[1 2 3 :asdf]", []Value{1, 2, 3, "asdf"})
 	assertParse(t, "[1 2 3] [] [1]", []Value{1, 2, 3}, []Value{}, []Value{1})
