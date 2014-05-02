@@ -62,3 +62,37 @@ The dot operator pushes two duplicates of the popped value.
     # Result: 5
     
 Bound values are resolved at runtime, allowing recursive functions or redeclarations.
+
+
+Syntactic sugar
+---------------
+
+- `:` starts a string until the next space (`:myvar "myvar" =`).
+- Strings can be delimited with single quotes.
+- A linebreak or tab can be used anywhere that a space is acceptable.
+- Spaces between words are collapsed.
+- Built-in functions with special characters are available as names too (`1 dup` is `1 .`).
+- Comments start with a `#` and go until the end of the line.
+
+
+Library
+-------
+
+This is a toy language but it has a few useful functions in its library. They are mainly about regular expressions, fetching HTTP pages and manipulating files:
+
+    "abbbc" "ab+c" matches
+    # Result: true
+    
+    "abc! abb acd" "(ab.)(!?)" findall
+    # Result: [["abc" "!"] ["abb" ""]]
+    
+    "google.com/robots.txt" get "Disallow: /search" contains
+    # Result: true
+    
+    "google.com/robots.txt" get "Disallow" "Forbidden" replace "robots.txt" write
+    # Result: creates a file with the edited robots.txt content
+    
+    "robots.txt" . read "Forbidden" "Disallow" replace & write
+    # Result: runs a find and replace in the robots.txt file saved
+    
+    "robots.txt" delete
