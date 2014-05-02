@@ -31,6 +31,34 @@ func sMap(i In, o Out) {
 	o(list)
 }
 
+func sIf(i In, o Out) {
+	value := i()
+	else_ := i().([]Value)
+	then := i().([]Value)
+
+	var condition bool	
+	switch value.(type) {
+	case int:
+		condition = value != 0
+	case string:
+		condition = value != ""
+	default:
+		fmt.Println("Ops:", value)
+	}
+
+	var branch []Value
+	if condition {
+		branch = then
+	} else {
+		branch = else_
+	}
+
+	result, _ := Run(branch)
+	for _, value := range result {
+		o(value)
+	}
+}
+
 func sPrint(i In, o Out) {
 	v := i()
 	fmt.Println(v)
@@ -138,6 +166,8 @@ func parseChan(input chan rune) (program []Value, err error) {
 
 			case '%':
 				token = sMap
+			case '?':
+				token = sIf
 
 			case '#':
 				ignoreComment(input)
