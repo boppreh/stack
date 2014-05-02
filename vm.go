@@ -8,21 +8,33 @@ import (
 )
 
 type In func() Value
-type Out func(...Value)
+type Out func(Value)
 
-func add(i In, o Out) { o(i().(int) + i().(int)) }
-func sub(i In, o Out) { o(i().(int) - i().(int)) }
-func div(i In, o Out) { o(i().(int) / i().(int)) }
-func mul(i In, o Out) { o(i().(int) * i().(int)) }
-func print(i In, o Out) {
+func sAdd(i In, o Out) { o(i().(int) + i().(int)) }
+func sSub(i In, o Out) { o(i().(int) - i().(int)) }
+func sDiv(i In, o Out) { o(i().(int) / i().(int)) }
+func sMul(i In, o Out) { o(i().(int) * i().(int)) }
+
+func sMap(i In, o Out) {
+	fn := i().(func(In, Out))
+	list := i().([]Value)
+
+	for i := range list {
+		fakeInput := func() Value { return list[i] }
+		fakeOutput := func(v Value) { list[i] = v }
+		fn(fakeInput, fakeOutput)
+	}
+}
+
+func sPrint(i In, o Out) {
 	v := i()
-	fmt.Println(v);
+	fmt.Println(v)
 	o(v)
 }
 
 func ignoreComment(input chan rune) {
 	for {
-		char, ok := <- input
+		char, ok := <-input
 		if char == '\n' || !ok {
 			return
 		}
@@ -87,11 +99,11 @@ func lexer(sourceCode string, c chan rune) {
 }
 
 func parseChan(input chan rune) (program []Value, err error) {
-	program = make([]Value, 0)	
+	program = make([]Value, 0)
 
 	for {
 		var token Value
-		char, ok := <- input
+		char, ok := <-input
 		if !ok {
 			return
 		}
@@ -110,10 +122,17 @@ func parseChan(input chan rune) (program []Value, err error) {
 			case '[':
 				token = parseList(input, ']')
 
-			case '+': token = add
-			case '-': token = sub
-			case '/': token = div
-			case '*': token = mul
+			case '+':
+				token = sAdd
+			case '-':
+				token = sSub
+			case '/':
+				token = sDiv
+			case '*':
+				token = sMul
+
+			case '%':
+				token = sMap
 
 			case '#':
 				ignoreComment(input)

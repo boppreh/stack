@@ -22,11 +22,9 @@ func New(values []Value) *Stack {
 	return s
 }
 
-func (s *Stack) Push(vs ...Value) {
-	for _, value := range vs {
-		s.top = &node{value, s.top}
-		s.size++
-	}
+func (s *Stack) Push(value Value) {
+	s.top = &node{value, s.top}
+	s.size++
 }
 
 func (s *Stack) Pop() (v Value) {
