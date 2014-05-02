@@ -90,3 +90,11 @@ func sWrite(i In, o Out) {
 		panic(err)
 	}
 }
+
+func sDelete(i In, o Out) {
+	path := i().(string)
+	err := os.Remove(path)
+	if err != nil {
+		panic(err)
+	}
+}
