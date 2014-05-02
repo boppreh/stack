@@ -104,6 +104,8 @@ func parseChan(input chan rune) (program []Value, err error) {
 				token = sIf
 			case '!':
 				token = sEval
+			case '.':
+				token = sDup
 
 			case '$':
 				token = sDecl

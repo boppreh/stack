@@ -41,6 +41,12 @@ func sEval(i In, o Out) {
 	}
 }
 
+func sDup(i In, o Out) {
+	v := i()
+	o(v)
+	o(v)
+}
+
 func sIf(i In, o Out) {
 	else_ := i().([]Value)
 	then := i().([]Value)
