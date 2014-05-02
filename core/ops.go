@@ -6,9 +6,18 @@ import (
 )
 
 func sAdd(i In, o Out) { o(i().(int) + i().(int)) }
-func sSub(i In, o Out) { o(i().(int) - i().(int)) }
-func sDiv(i In, o Out) { o(i().(int) / i().(int)) }
 func sMul(i In, o Out) { o(i().(int) * i().(int)) }
+
+func sSub(i In, o Out) {
+	a := i().(int)
+	b := i().(int)
+	o(b - a)
+}
+func sDiv(i In, o Out) {
+	a := i().(int)
+	b := i().(int)
+	o(b / a)
+}
 
 func sEq(i In, o Out) {
 	o(i() == i())

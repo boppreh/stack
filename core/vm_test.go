@@ -67,6 +67,8 @@ func TestRun(t *testing.T) {
 	assertRun(t, "1 2 3", 3, 2, 1)
 	assertRun(t, "1 1 +", 2)
 	assertRun(t, "1 1 + 2 *", 4)
+	assertRun(t, "10 1 - 2 -", 7)
+	assertRun(t, "10 5 /", 2)
 
 	assertRun(t, "1 1 =", true)
 	assertRun(t, "1 2 <", true)
