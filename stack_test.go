@@ -1,9 +1,12 @@
 package stack
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func assert(t *testing.T, result Value, expected Value) {
-	if result != expected {
+	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Expected %v, got %v", expected, result)
 	}
 }

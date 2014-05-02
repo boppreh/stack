@@ -1,15 +1,11 @@
 package stack
 
 import (
-	"reflect"
 	"testing"
 )
 
 func assertParse(t *testing.T, sourceCode string, expected []Value) {
-	result := Parse(sourceCode)
-	if !reflect.DeepEqual(result, expected) {
-		t.Errorf("Expected %v, got %v.", expected, result)
-	}
+	assert(t, Parse(sourceCode), expected)
 }
 
 func TestParse(t *testing.T) {
