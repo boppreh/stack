@@ -123,4 +123,6 @@ var ops = map[string]func (In, Out){
 
 	"int": sNumber,
 	"str": sStr,
+
+	"matches": sMatches,
 }
