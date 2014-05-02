@@ -19,7 +19,7 @@ func sMap(i In, o Out) {
 	fnList := i().([]Value)
 	list := i().([]Value)
 
-	fullFnList := make([]Value, len(fnList) + 1)
+	fullFnList := make([]Value, len(fnList)+1)
 	copy(fullFnList[1:], fnList)
 
 	for i := range list {
@@ -44,7 +44,7 @@ func sIf(i In, o Out) {
 	else_ := i().([]Value)
 	then := i().([]Value)
 
-	var condition bool	
+	var condition bool
 	switch value.(type) {
 	case int:
 		condition = value != 0
