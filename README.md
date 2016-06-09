@@ -6,7 +6,7 @@ interpreted, dynamically but strongly typed, homoiconic and has first class
 functions. The standard library contains functions for file management, regular
 expressions and networking. It is very terse, but unfortunately it seems hard to read.
 
-Source code is made of space delimited words. If a word is a value, it is pushed onto the stack. If it's a function, it's executed and may push or pop values from teh stack, usually popping the required arguments and pushing the result.
+Source code is made of space delimited words. If a word is a value, it is pushed onto the stack. If it's a function, it's executed and may push or pop values from the stack, usually popping the required arguments and pushing the result.
 
 The interpreter can run source code files or be used as an interactive interpreter (REPL). The parser, interpreter and libraries are written in Go and the default map implementation (`%` or `map`) is parallel.
 
